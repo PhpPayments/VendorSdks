@@ -1,10 +1,18 @@
 <?php
 /// \cond
+require_once('pnag_article.php');
+require_once('pnag_customer.php');
+
+require_once('pnag_article.php');
+require_once('pnag_article.php');
 /**
  * Copyright (c) 2012 SOFORT AG
  *
- * $Date: 2012-09-05 14:27:56 +0200 (Wed, 05 Sep 2012) $
- * @version SofortLib 1.3.0  $Id: class.abstract_document.inc.php 5301 2012-09-05 12:27:56Z dehn $
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
+ *
+ * $Date: 2012-11-23 11:34:40 +0100 (Fri, 23 Nov 2012) $
+ * @version SofortLib 1.5.4  $Id: class.abstract_document.inc.php 5748 2012-11-23 10:34:40Z Niehoff $
  * @author SOFORT AG http://www.sofort.com (integration@sofort.com)
  * @internal
  *
@@ -139,206 +147,6 @@ class PnagAbstractDocument {
 	 */
 	public function getAmount() {
 		return $this->_amount;
-	}
-}
-
-
-/**
- *
- * Data object that encapsulates user's data
- * $Date: 2012-09-05 14:27:56 +0200 (Wed, 05 Sep 2012) $
- * $ID$
- *
- */
-class PnagCustomer {
-	
-	public $name = '';
-	
-	public $lastname = '';
-	
-	public $firstname = '';
-	
-	public $company = '';
-	
-	public $csID = '';
-	
-	public $vatId = '';
-	
-	public $shopId = '';
-	
-	public $Id = '';
-	
-	public $cIP = '';
-	
-	public $streetAddress = '';
-	
-	public $suburb = '';
-	
-	public $city = '';
-	
-	public $postcode = '';
-	
-	public $state = '';
-	
-	public $country = '';
-	
-	public $formatId = '';
-	
-	public $telephone = '';
-	
-	public $emailAddress = '';
-	
-	
-	/**
-	 * Set the customer's credentials
-	 * @param $name	string
-	 * @param $lastname string
-	 * @param $firstname string
-	 * @param $company string
-	 * @param $csID string customer id in shop
-	 * @param $vatId string - customer's VAT ID
-	 * @param $shopId - shop's ID
-	 * @param $Id
-	 * @param $cIP
-	 * @param $streetAddress string
-	 * @param $suburb string
-	 * @param $city string
-	 * @param $postcode string
-	 * @param $state string
-	 * @param $country	string
-	 * @param $formatId string
-	 * @param $telephone string
-	 * @param $emailAddress string
-	 */
-	public function PnagCustomer($name = '', $lastname = '', $firstname = '', $company = '', $csID = '', $vatId = '', $shopId = '', $Id = '', $cIP = '', $streetAddress = '', $suburb = '', $city = '', $postcode = '', $state = '', $country = '', $formatId = '', $telephone = '', $emailAddress = '') {
-		$this->name = $name;
-		$this->lastname = $lastname;
-		$this->firstname = $firstname;
-		$this->company = $company;
-		$this->csID = $csID;
-		$this->vatId = $vatId;
-		$this->shopId = $shopId;
-		$this->Id = $Id;
-		$this->cIP = $cIP;
-		$this->street_address = $streetAddress;
-		$this->suburb = $suburb;
-		$this->city = $city;
-		$this->postcode = $postcode;
-		$this->state = $state;
-		$this->country = $country;
-		$this->formatId = $formatId;
-		$this->telephone = $telephone;
-		$this->emailAddress = $emailAddress;
-	}
-}
-
-
-/**
- *
- * Data object that encapsulates article's data
- * $Date: 2012-09-05 14:27:56 +0200 (Wed, 05 Sep 2012) $
- * $ID$
- *
- */
-class PnagArticle {
-	
-	public $itemId = '';
-	
-	public $productNumber = '';
-	
-	public $productType = '';
-	
-	public $title = '';
-	
-	public $description = '';
-	
-	public $quantity = '';
-	
-	public $unitPrice = '';
-	
-	public $tax = '';
-	
-	
-	/**
-	 * Constructor
-	 * @param $itemId int
-	 * @param $productNumber string
-	 * @param $productType string
-	 * @param $title string
-	 * @param $description string
-	 * @param $quantity int
-	 * @param $unitPrice float
-	 * @param $tax float
-	 */
-	public function __construct($itemId, $productNumber, $productType, $title, $description, $quantity, $unitPrice, $tax) {
-		$this->itemId = $itemId;
-		$this->productNumber = $productNumber;
-		$this->productType = $productType;
-		$this->title = $title;
-		$this->description = $description;
-		$this->quantity = $quantity;
-		$this->unitPrice = $unitPrice;
-		$this->tax = $tax;
-	}
-	
-	
-	public function getItemId () {
-		return $this->itemId;
-	}
-	
-	
-	public function getQuantity() {
-		return $this->quantity;
-	}
-	
-	
-	public function setQuantity($quantity) {
-		$this->quantity = $quantity;
-	}
-	
-	
-	public function getUnitPrice() {
-		return $this->unitPrice;
-	}
-	
-	
-	public function setUnitPrice($unitPrice) {
-		$this->unitPrice = $unitPrice;
-	}
-	
-	
-	public function getTitle() {
-		return $this->title;
-	}
-	
-	
-	public function getTax() {
-		return $this->tax;
-	}
-	
-	
-	public function setTax($value) {
-		$this->tax = $value;
-	}
-	
-	
-	public function setProductNumber($productNumber) {
-		$this->productNumber = $productNumber;
-	}
-	
-	
-	public function getProductNumber() {
-		return $this->productNumber;
-	}
-	
-	
-	public function setDescription($description) {
-		$this->description = $description;
-	}
-	
-	
-	public function getDescription() {
-		return $this->description;
 	}
 }
 /// \endcond

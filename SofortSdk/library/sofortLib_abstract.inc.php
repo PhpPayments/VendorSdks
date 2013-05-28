@@ -1,7 +1,7 @@
 <?php
 /// \cond
 /**
- * interface for Payment Network XML-API
+ * interface for SOFORT XML-API
  *
  * this class implements basic http authentication and a xml-parser
  * for parsing response messages
@@ -9,9 +9,12 @@
  * requires libcurl and openssl
  *
  * Copyright (c) 2012 SOFORT AG
+ * 
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
  *
- * $Date: 2012-09-05 14:27:56 +0200 (Wed, 05 Sep 2012) $
- * @version SofortLib 1.5.0  $Id: sofortLib_abstract.inc.php 5301 2012-09-05 12:27:56Z dehn $
+ * $Date: 2012-11-23 11:34:40 +0100 (Fri, 23 Nov 2012) $
+ * @version SofortLib 1.5.4  $Id: sofortLib_abstract.inc.php 5748 2012-11-23 10:34:40Z Niehoff $
  * @author SOFORT AG http://www.sofort.com (integration@sofort.com)
  * @internal
  *
@@ -59,11 +62,22 @@ class SofortLib_Abstract extends SofortLib {
 	}
 	
 	
+	/**
+	 * 
+	 * Log XML with message
+	 * @param string $xml
+	 * @param string $message
+	 */
 	protected function _log($xml, $message) {
 		$this->log(get_class($this).$message.$xml);
 	}
 	
 	
+	/**
+	 * 
+	 * prepare the root tag
+	 * @param array $requestData
+	 */
 	private function _prepareRootTag($requestData) {
 		if ($this->_apiVersion) {
 			$requestData[$this->_xmlRootTag]['@attributes']['version'] = $this->_apiVersion;

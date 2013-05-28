@@ -1,4 +1,22 @@
 <?php
+require_once('array_to_xml_exception.php');
+
+/**
+ * @author SOFORT AG (integration@sofort.com)
+ * @link http://www.sofort.com/
+ * 
+ * Copyright (c) 2012 SOFORT AG
+ *
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
+ */
+
+
+/**
+ * 
+ * Array To XML conversion
+ *
+ */
 class ArrayToXml {
 	/**
 	 * Maximum allowed depth
@@ -28,9 +46,9 @@ class ArrayToXml {
 		
 		if (count($input) == 1) {
 			$tagName = key($input);
-			$Tag = new Tag($tagName, $this->_extractAttributesSection($input[$tagName]), $this->_extractDataSection($input[$tagName], $trim));
-			$this->_render($input[$tagName], $Tag, 1, $trim);
-			$this->_parsedData = $Tag->render();
+			$SofortTag = new SofortTag($tagName, $this->_extractAttributesSection($input[$tagName]), $this->_extractDataSection($input[$tagName], $trim));
+			$this->_render($input[$tagName], $SofortTag, 1, $trim);
+			$this->_parsedData = $SofortTag->render();
 		} elseif(!$input) {
 			$this->_parsedData = '';
 		} else {
@@ -98,7 +116,7 @@ class ArrayToXml {
 	 * @return Tag
 	 */
 	private function _createNode($name, array $attributes, array $children) {
-		return new Tag($name, $attributes, $children);
+		return new SofortTag($name, $attributes, $children);
 	}
 	
 	
@@ -109,7 +127,7 @@ class ArrayToXml {
 	 * @return Text
 	 */
 	private function _createTextNode($text, $trim) {
-		return new Text($text, true, $trim);
+		return new SofortText($text, true, $trim);
 	}
 	
 	
@@ -159,7 +177,7 @@ class ArrayToXml {
 	 * @param bool $trim
 	 * @throws ArrayToXmlException if depth is exceeded
 	 */
-	private function _render($input, Tag $ParentTag, $currentDepth, $trim) {
+	private function _render($input, SofortTag $ParentTag, $currentDepth, $trim) {
 		$this->_checkDepth($currentDepth);
 		
 		if (is_array($input)) {
@@ -196,5 +214,4 @@ class ArrayToXml {
 	}
 }
 
-class ArrayToXmlException extends Exception {}
 ?>

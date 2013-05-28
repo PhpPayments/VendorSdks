@@ -7,9 +7,12 @@
  * $confirmObj->confirmInvoice('1234-456-789654-31321')->sendRequest();
  *
  * Copyright (c) 2012 SOFORT AG
+ * 
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
  *
- * $Date: 2012-09-05 14:27:56 +0200 (Wed, 05 Sep 2012) $
- * @version SofortLib 1.5.0  $Id: sofortLib_confirm_sr.inc.php 5301 2012-09-05 12:27:56Z dehn $
+ * $Date: 2012-11-23 17:15:47 +0100 (Fri, 23 Nov 2012) $
+ * @version SofortLib 1.5.4  $Id: sofortLib_confirm_sr.inc.php 5773 2012-11-23 16:15:47Z dehn $
  * @author SOFORT AG http://www.sofort.com (integration@sofort.com)
  *
  */
@@ -56,6 +59,12 @@ class SofortLib_ConfirmSr extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 * 
+	 * Setter for invoice number
+	 * @param String $invoiceNumber
+	 * @param object $invoice
+	 */
 	public function setInvoiceNumber($invoiceNumber, $invoice = 0) {
 		$this->setApiVersion('2.0');
 		$this->_parameters['invoice'][$invoice]['invoice_number'] = $invoiceNumber;
@@ -63,6 +72,12 @@ class SofortLib_ConfirmSr extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 * 
+	 * Setter for costumer numer
+	 * @param string $customerNumber
+	 * @param int $invoice
+	 */
 	public function setCustomerNumber($customerNumber, $invoice = 0) {
 		$this->setApiVersion('2.0');
 		$this->_parameters['invoice'][$invoice]['customer_id'] = $customerNumber;
@@ -70,6 +85,12 @@ class SofortLib_ConfirmSr extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 * 
+	 * Setter for order number
+	 * @param string $orderNumber
+	 * @param unknown_type $invoice
+	 */
 	public function setOrderNumber($orderNumber, $invoice = 0) {
 		$this->setApiVersion('2.0');
 		$this->_parameters['invoice'][$invoice]['order_id'] = $orderNumber;
@@ -144,9 +165,10 @@ class SofortLib_ConfirmSr extends SofortLib_Abstract {
 	}
 	
 	/**
+	 * 
+	 * just useable with api version 1.0
 	 * @see SofortLib_EditSr
 	 * @deprecated
-	 * just useable with api version 1.0
 	 * @param array $cartItems
 	 */
 	function updateCart($cartItems = array()) {
@@ -233,10 +255,19 @@ class SofortLib_ConfirmSr extends SofortLib_Abstract {
 		return isset($this->_response['invoice'][$i]['download_url']['@data']) ? $this->_response['invoice'][$i]['download_url']['@data'] : '';
 	}
 	
-	
+	/**
+	 * Parse the XML (override)
+	 * (non-PHPdoc)
+	 * @see SofortLib_Abstract::_parseXml()
+	 */
 	protected function _parseXml() {}
 	
 	
+	/**
+	 * Handle errors if occurred
+	 * (non-PHPdoc)
+	 * @see SofortLib::_handleErrors()
+	 */
 	protected function _handleErrors() {
 		if ($this->_apiVersion == 1) {
 			return parent::_handleErrors();

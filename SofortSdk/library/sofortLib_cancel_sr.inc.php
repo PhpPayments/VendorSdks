@@ -7,9 +7,12 @@
  * $confirmObj->confirmInvoice('1234-456-789654-31321')->sendRequest();
  *
  * Copyright (c) 2012 SOFORT AG
+ * 
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
  *
  * $Date: 2012-05-21 16:53:26 +0200 (Mo, 21 Mai 2012) $
- * @version SofortLib 1.5.0  $Id: sofortLib_cancel_sr.inc.php 4191 2012-05-21 14:53:26Z niehoff $
+ * @version SofortLib 1.5.4  $Id: sofortLib_cancel_sr.inc.php 4191 2012-05-21 14:53:26Z niehoff $
  * @author SOFORT AG http://www.sofort.com (integration@sofort.com)
  *
  */
@@ -59,6 +62,12 @@ class SofortLib_CancelSr extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 * 
+	 * Setter for credit note number
+	 * @param string $creditNoteNumber
+	 * @param int $invoice
+	 */
 	public function setCreditNoteNumber($creditNoteNumber, $invoice = 0) {
 		$this->_parameters['invoice'][$invoice]['credit_note_number'] = $creditNoteNumber;
 		return $this;
@@ -95,11 +104,21 @@ class SofortLib_CancelSr extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 * Parse the XML (override)
+	 * (non-PHPdoc)
+	 * @see SofortLib_Abstract::_parseXml()
+	 */
 	protected function _parseXml() {
 		$this->_file = isset($this->_response['invoice']['download_url']['@data']) ? $this->_response['invoice']['download_url']['@data'] : '';
 	}
 	
 	
+	/**
+	 * Error handling (override)
+	 * (non-PHPdoc)
+	 * @see SofortLib::_handleErrors()
+	 */
 	protected function _handleErrors() {
 		if (!isset($this->_response['invoices']['invoice'][0])) {
 			$tmp = $this->_response['invoices']['invoice'];

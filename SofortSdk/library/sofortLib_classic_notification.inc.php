@@ -4,8 +4,11 @@
  *
  * Copyright (c) 2012 SOFORT AG
  *
- * $Date: 2012-09-05 14:28:13 +0200 (Wed, 05 Sep 2012) $
- * @version SofortLib 1.5.0  $Id: sofortLib_classic_notification.inc.php 5302 2012-09-05 12:28:13Z dehn $
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
+ *
+ * $Date: 2012-11-30 12:10:48 +0100 (Fri, 30 Nov 2012) $
+ * @version SofortLib 1.5.4  $Id: sofortLib_classic_notification.inc.php 5809 2012-11-30 11:10:48Z rotsch $
  * @author SOFORT AG http://www.sofort.com (integration@sofort.com)
  *
  */
@@ -23,18 +26,34 @@ class SofortLib_ClassicNotification {
 
 	private $_hashCheck = false;
 	
+	private $_statusReason;
 	
+	
+	/**
+	 *
+	 * Constructor for SofortLib_ClassicNotification
+	 * @param int $userId
+	 * @param int $projectId
+	 * @param string $password
+	 * @param string $hashFunction
+	 */
 	public function __construct($userId, $projectId, $password, $hashFunction = 'sha1') {
 		$this->_password = $password;
 		$this->_userId = $userId;
 		$this->_projectId = $projectId;
 		$this->_hashFunction = strtolower($hashFunction);
+		$this->_statusReason = false;
 	}
 	
 	
-	public function getNotification($request = '') {
-		if ($request == '') {
-			$request = $_POST;
+	/**
+	 *
+	 * Get the Notification details
+	 * @param string $request (POST-Data)
+	 */
+	public function getNotification($request) {
+		if (array_key_exists('status_reason', $request) && !empty($request['status_reason'])) {
+			$this->_statusReason = $request['status_reason'];
 		}
 		
 		if (array_key_exists('international_transaction', $request)) {
@@ -78,6 +97,11 @@ class SofortLib_ClassicNotification {
 	}
 	
 	
+	/**
+	 *
+	 * Check if error occurred
+	 * @return boolean
+	 */
 	public function isError() {
 		if (!$this->_hashCheck) {
 			return true;
@@ -87,6 +111,10 @@ class SofortLib_ClassicNotification {
 	}
 	
 	
+	/**
+	 *
+	 * Get error if occurred
+	 */
 	public function getError() {
 		if (!$this->_hashCheck) {
 			return 'hash-check failed';
@@ -96,51 +124,76 @@ class SofortLib_ClassicNotification {
 	}
 	
 	
+	/**
+	 *
+	 * Getter for transactionId
+	 */
 	public function getTransaction() {
 		return $this->params['transaction'];
 	}
 	
 	
+	/**
+	 *
+	 * Getter for amount
+	 * @return float
+	 */
 	public function getAmount() {
 		return $this->params['amount'];
 	}
 	
 	
+	/**
+	 * Getter for user variables
+	 * @param int $i
+	 */
 	public function getUserVariable($i = 0) {
 		return $this->params['user_variable_'.$i];
 	}
 	
 	
+	/**
+	 *
+	 * Getter for currency
+	 * @return string
+	 */
 	public function getCurrency() {
 		return $this->params['currency_id'];
 	}
 	
 	
+	/**
+	 *
+	 * Getter for time
+	 * return timestamp
+	 */
 	public function getTime() {
 		return $this->params['created'];
 	}
 	
 	
+	/**
+	 *
+	 * Getter for status
+	 * @return string
+	 */
 	public function getStatus() {
 		return $this->params['status'];
 	}
 	
 	
+	/**
+	 *
+	 * Getter for status reason
+	 * @return string
+	 */
 	public function getStatusReason() {
-		switch ($this->getStatus()) {
-			case 'received':
-				return 'credited';
-			case 'pending':
-				return 'not_credited_yet';
-			case 'loss':
-				return 'loss';
-		}
-		
-		return false;
+		return $this->_statusReason;
 	}
 	
 	
 	/**
+	 * Getter for Hash Hex Value
 	 * @param string $data string to be hashed
 	 * @return string the hash
 	 */

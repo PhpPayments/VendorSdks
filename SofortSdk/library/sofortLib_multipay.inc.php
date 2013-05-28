@@ -18,9 +18,12 @@
  * ... finish order in the shopsystem
  *
  * Copyright (c) 2012 SOFORT AG
+ * 
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
  *
- * $Date: 2012-09-05 14:27:56 +0200 (Wed, 05 Sep 2012) $
- * @version SofortLib 1.5.0  $Id: sofortLib_multipay.inc.php 5301 2012-09-05 12:27:56Z dehn $
+ * $Date: 2012-11-23 17:15:47 +0100 (Fri, 23 Nov 2012) $
+ * @version SofortLib 1.5.4  $Id: sofortLib_multipay.inc.php 5773 2012-11-23 16:15:47Z dehn $
  * @author SOFORT AG http://www.sofort.com (integration@sofort.com)
  *
  */
@@ -169,6 +172,16 @@ class SofortLib_Multipay extends SofortLib_Abstract {
 	
 	
 	/**
+	 * 
+	 * Setter for redirecting the success link automatically
+	 * @param boolean $arg
+	 */
+	public function setSuccessLinkRedirect($arg) {
+		$this->_parameters['success_link_redirect'] = $arg;
+	}
+	
+	
+	/**
 	 * the customer will be redirected to this url after a successful
 	 * transaction, this should be a page where a short confirmation is
 	 * displayed
@@ -176,8 +189,9 @@ class SofortLib_Multipay extends SofortLib_Abstract {
 	 * @param string $arg the url after a successful transaction
 	 * @return SofortLib_Multipay
 	 */
-	public function setSuccessUrl($arg) {
-		$this->_parameters['success_url'] = $arg;
+	public function setSuccessUrl($successUrl, $redirect = true) {
+		$this->_parameters['success_url'] = $successUrl;
+		$this->setSuccessLinkRedirect($redirect);
 		return $this;
 	}
 	
@@ -381,18 +395,30 @@ class SofortLib_Multipay extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 * 
+	 * Setter for base checks disabled of Lastschrift
+	 */
 	public function setLastschriftBaseCheckDisabled() {
 		$this->_parameters['ls']['base_check_disabled'] = 1;
 		return $this;
 	}
 	
 	
+	/**
+	 * 
+	 * Setter for extende checks disabled of Lastschrift
+	 */
 	public function setLastschriftExtendedCheckDisabled() {
 		$this->_parameters['ls']['extended_check_disabled'] = 1;
 		return $this;
 	}
 	
 	
+	/**
+	 * 
+	 * Setter for mobile checks disabled of Lastschrift
+	 */
 	public function setLastschriftMobileCheckDisabled() {
 		$this->_parameters['ls']['mobile_check_disabled'] = 1;
 		return $this;
@@ -423,70 +449,6 @@ class SofortLib_Multipay extends SofortLib_Abstract {
 		$this->_parameters['ls']['invoice_address']['zipcode'] = $zipcode;
 		$this->_parameters['ls']['invoice_address']['city'] = $city;
 		$this->_parameters['ls']['invoice_address']['country_code'] = $country;
-		return $this;
-	}
-	
-	
-	/**
-	 * add SofortDauerauftrag as a payment method
-	 *
-	 * @return SofortLib_Multipay object
-	 */
-	public function setSofortDauerauftrag() {
-		$this->_paymentMethods[] = 'sa';
-		
-		if (!array_key_exists('sa', $this->_parameters) || !is_array($this->_parameters['sa'])) {
-			$this->_parameters['sa'] = array();
-		}
-		
-		return $this;
-	}
-	
-	
-	/**
-	 *
-	 * Set the date to start "Dauerauftrag"
-	 * date must be compliant to ISO 8601 (e.g. 2011-06-21)
-	 * @param $arg - string date
-	 */
-	public function setSofortDauerauftragStartDate($arg) {
-		$this->_parameters['sa']['start_date'] = $arg;
-		return $this;
-	}
-	
-	
-	/**
-	 *
-	 * Enter description here ...
-	 * @param $arg
-	 * @return object
-	 */
-	public function setSofortDauerauftragTotalPayments($arg) {
-		$this->_parameters['sa']['total_payments'] = $arg;
-		return $this;
-	}
-	
-	
-	/**
-	 *
-	 * set the minimum amount for Dauerauftrag
-	 * @param $arg
-	 * @return object
-	 */
-	function setSofortDauerauftragMinimumPayments($arg) {
-		$this->_parameters['sa']['minimum_payments'] = $arg;
-		return $this;
-	}
-	
-	
-	/**
-	 *
-	 * set the interval for payment
-	 * @param $arg
-	 * @return object
-	 */
-	public function setSofortDauerauftragInterval($arg) {
-		$this->_parameters['sa']['interval'] = $arg;
 		return $this;
 	}
 	
@@ -675,6 +637,11 @@ class SofortLib_Multipay extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 * 
+	 * Setter for commenting Rechnung by sofort
+	 * @param string $comment
+	 */
 	public function setSofortrechungComment($comment) {
 		$this->_parameters['sr']['items']['comment'] = $comment;
 	}
@@ -725,6 +692,11 @@ class SofortLib_Multipay extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for invoice's item
+	 * @param int $itemId
+	 */
 	public function getSofortrechnungItemAmount($itemId) {
 		$i = 0;
 		
@@ -738,6 +710,11 @@ class SofortLib_Multipay extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 * 
+	 * Setter for invoice's time for payment
+	 * @param string $arg
+	 */
 	public function setSofortrechnungTimeForPayment($arg) {
 		$this->_parameters['sr']['time_for_payment'] = $arg;
 		return $this;
@@ -756,11 +733,20 @@ class SofortLib_Multipay extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for invoice's item
+	 * @param int $itemId
+	 */
 	public function getSofortrechnungItem($itemId) {
 		return $this->_parameters['sr']['items'][$itemId];
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for all invoice's items
+	 */
 	public function getSofortrechnungItems() {
 		return $this->_parameters['sr']['items'];
 	}
@@ -781,6 +767,11 @@ class SofortLib_Multipay extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for payment method
+	 * @param int $i
+	 */
 	public function getPaymentMethod($i = 0) {
 		if ($i < 0 || $i >= count($this->_paymentMethods)) {
 			return false;
@@ -790,36 +781,56 @@ class SofortLib_Multipay extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 * 
+	 * Is sofortüberweisung
+	 */
 	public function isSofortueberweisung() {
 		return array_key_exists('su', $this->_parameters);
 	}
 	
 	
+	/**
+	 * 
+	 * Is vorkasse by sofort
+	 */
 	public function isSofortvorkasse() {
 		return array_key_exists('sv', $this->_parameters);
 	}
 	
 	
+	/**
+	 * 
+	 * Check if it is a sofortlastschrift
+	 */
 	public function isSofortlastschrift() {
 		return array_key_exists('sl', $this->_parameters);
 	}
 	
 	
+	/**
+	 * 
+	 * Is lastschrift by sofort
+	 */
 	public function isLastschrift() {
 		return array_key_exists('ls', $this->_parameters);
 	}
 	
 	
-	public function isSofortdauerauftrag() {
-		return array_key_exists('sa', $this->_parameters);
-	}
-	
-	
+	/**
+	 * 
+	 * Is rechnung by sofort
+	 */
 	public function isSofortrechnung() {
 		return array_key_exists('sr', $this->_parameters);
 	}
 	
 	
+	/**
+	 * 
+	 * Check if consumer protection / customer protection enabled
+	 * @param string $product
+	 */
 	public function isConsumerProtection($product) {
 		if (in_array($product, array('su', 'sv'))) {
 			if(isset($this->_parameters[$product]['customer_protection'])) {
@@ -833,6 +844,12 @@ class SofortLib_Multipay extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 * 
+	 * Check if debit pay check disabled
+	 * @param string $product
+	 * @param boolean $check
+	 */
 	public function isDebitpayCheckDisabled($product, $check) {
 		if (in_array($product, array('ls', 'sl')) && in_array($check, array('base_check_disabled', 'extended_check_disabled', 'mobile_check_disabled'))) {
 			return $this->_parameters[$product][$check];
@@ -852,6 +869,11 @@ class SofortLib_Multipay extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 * Parse the XML (override)
+	 * (non-PHPdoc)
+	 * @see SofortLib_Abstract::_parseXml()
+	 */
 	protected function _parseXml() {
 		$this->_transactionId = isset($this->_response['new_transaction']['transaction']['@data'])
 			? $this->_response['new_transaction']['transaction']['@data']

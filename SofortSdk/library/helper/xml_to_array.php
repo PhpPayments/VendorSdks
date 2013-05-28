@@ -1,4 +1,21 @@
 <?php
+/**
+ * @author SOFORT AG (integration@sofort.com)
+ * @link http://www.sofort.com/
+ * 
+ * Copyright (c) 2012 SOFORT AG
+ *
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
+ */
+ 
+require_once('xml_to_array_exception.php');
+require_once('xml_to_array_node.php');
+
+/**
+ *
+ * XML To Array conversion
+ */
 class XmlToArray {
 	
 	/**
@@ -68,6 +85,12 @@ class XmlToArray {
 	}
 	
 	
+	/**
+	 * 
+	 * Log messages (debugging purpose)
+	 * @param string $msg
+	 * @param int $type
+	 */
 	public function log($msg, $type = 2) {
 		if (class_exists('Object')) {
 			!($this->_Object instanceof Object) && $this->_Object = new Object();
@@ -124,9 +147,11 @@ class XmlToArray {
 			$this->_CurrentXmlToArrayNode instanceof XmlToArrayNode && $this->_CurrentXmlToArrayNode->setData(html_entity_decode($data));
 		} elseif ($data && isset(self::$_htmlEntityExceptions[$data])) {
 			$this->_CurrentXmlToArrayNode instanceof XmlToArrayNode && $this->_CurrentXmlToArrayNode->setData(self::$_htmlEntityExceptions[$data]);
-		} elseif ($data && is_string($data) && strpos($data, '<!--') === false) {
-			trigger_error('Default data handler used. The data passed was: '.$data, E_USER_WARNING);
-			throw new XmlToArrayException('Unknown error occurred');
+		} elseif ($data && is_string($data) && strpos($data, '<!--') === false && strpos($data, '<?xml') === false) {
+			if (getenv('sofortDebug') == 'true') {
+				trigger_error('Default data handler used. The data passed was: '.$data, E_USER_WARNING);
+				throw new XmlToArrayException('Unknown error occurred');
+			}
 		}
 	}
 	
@@ -164,21 +189,56 @@ class XmlToArray {
 	}
 	
 	
+	/**
+	 * 
+	 * External Entity, no operation
+	 * @param unknown_type $parser
+	 * @param unknown_type $openEntityNames
+	 * @param unknown_type $base
+	 * @param unknown_type $systemId
+	 * @param unknown_type $publicId
+	 */
 	private function _externalEntity($parser , $openEntityNames , $base , $systemId , $publicId) {
 		// noop
 	}
 	
 	
+	/**
+	 * 
+	 * Notation Decl, no operation
+	 * @param unknown_type $parser
+	 * @param unknown_type $notationName
+	 * @param unknown_type $base
+	 * @param unknown_type $systemId
+	 * @param unknown_type $publicId
+	 */
 	private function _notationDecl($parser , $notationName , $base , $systemId , $publicId) {
 		// noop
 	}
 	
 	
+	/**
+	 * 
+	 * Processing Instruction, no operation
+	 * @param unknown_type $parser
+	 * @param unknown_type $target
+	 * @param unknown_type $data
+	 */
 	private function _processingInstruction($parser, $target, $data) {
 		// noop
 	}
 	
 	
+	/**
+	 * 
+	 * Unparsed Entity Decl, no operation
+	 * @param unknown_type $parser
+	 * @param unknown_type $entityName
+	 * @param unknown_type $base
+	 * @param unknown_type $systemId
+	 * @param unknown_type $publicd
+	 * @param unknown_type $notationName
+	 */
 	private function _unparsedEntityDecl($parser , $entityName , $base , $systemId , $publicd , $notationName) {
 		// noop
 	}
@@ -209,109 +269,4 @@ class XmlToArray {
 	}
 }
 
-class XmlToArrayException extends Exception {}
-
-class XmlToArrayNode {
-	
-	private $_attributes = array();
-	private $_children = array();
-	private $_data = '';
-	private $_name = '';
-	private $_open = true;
-	private $_ParentXmlToArrayNode = null;
-	
-	
-	public function __construct($name, $attributes) {
-		$this->_name = $name;
-		$this->_attributes = $attributes;
-	}
-	
-	
-	public function addChild(XmlToArrayNode $XmlToArrayNode) {
-		$this->_children[] = $XmlToArrayNode;
-	}
-	
-	
-	public function getData() {
-		return $this->_data;
-	}
-	
-	
-	public function getName() {
-		return $this->_name;
-	}
-	
-	
-	public function getParentXmlToArrayNode() {
-		return $this->_ParentXmlToArrayNode;
-	}
-	
-	
-	public function hasChildren() {
-		return count($this->_children);
-	}
-	
-	
-	public function hasParentXmlToArrayNode() {
-		return $this->_ParentXmlToArrayNode instanceof XmlToArrayNode;
-	}
-	
-	
-	public function isOpen() {
-		return $this->_open;
-	}
-	
-	
-	/**
-	 * Renders nodes as array
-	 * @param bool $simpleStructure pass true to get an array without @data and @attributes fields
-	 * @throws XmlToArrayException
-	 */
-	public function render($simpleStructure) {
-		$array = array();
-		$multiples = array();
-		
-		foreach ($this->_children as $Child) {
-			$multiples[$Child->getName()] = isset($multiples[$Child->getName()]) ? $multiples[$Child->getName()] + 1 : 0;
-		}
-		
-		foreach ($this->_children as $Child) {
-			if ($multiples[$Child->getName()]) {
-				if ($simpleStructure && !$Child->hasChildren()) {
-					$array[$Child->getName()][] = $Child->getData();
-				} else {
-					$array[$Child->getName()][] = $Child->render($simpleStructure);
-				}
-			} elseif ($simpleStructure && !$Child->hasChildren()) {
-				$array[$Child->getName()] = $Child->getData();
-			} else {
-				$array[$Child->getName()] = $Child->render($simpleStructure);
-			}
-		}
-		
-		if (!$simpleStructure) {
-			$array['@data'] = $this->_data;
-			$array['@attributes'] = $this->_attributes;
-		}
-		
-		return $this->_ParentXmlToArrayNode instanceof XmlToArrayNode
-			? $array
-			: array($this->_name => $simpleStructure && !$this->hasChildren() ? $this->getData() : $array);
-	}
-	
-	
-	public function setClosed() {
-		$this->_open = false;
-	}
-	
-	
-	public function setData($data) {
-		$this->_data .= $data;
-	}
-	
-	
-	public function setParentXmlToArrayNode(XmlToArrayNode $XmlToArrayNode) {
-		$this->_ParentXmlToArrayNode = $XmlToArrayNode;
-	}
-}
 ?>

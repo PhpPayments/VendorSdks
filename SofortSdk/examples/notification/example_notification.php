@@ -1,6 +1,9 @@
 <?php
 /**
  * Copyright (c) 2012 SOFORT AG
+ * 
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
  *
  * $Date$
  * @version SofortLib 1.5.0rc  $Id$

@@ -1,9 +1,12 @@
 <?php
 /**
  * Copyright (c) 2012 SOFORT AG
+ * 
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
  *
- * $Date: 2012-09-05 14:27:56 +0200 (Wed, 05 Sep 2012) $
- * @version SofortLib 1.5.0  $Id: example_edit_cart.php 5301 2012-09-05 12:27:56Z dehn $
+ * $Date: 2012-11-21 12:02:12 +0100 (Wed, 21 Nov 2012) $
+ * @version SofortLib 1.5.0  $Id: example_edit_cart.php 5724 2012-11-21 11:02:12Z rotsch $
  * @author SOFORT AG http://www.sofort.com (integration@sofort.com)
  *
  */

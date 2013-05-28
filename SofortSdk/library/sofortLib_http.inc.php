@@ -7,8 +7,11 @@
  *
  * Copyright (c) 2012 SOFORT AG
  *
- * $Date: 2012-09-05 14:27:56 +0200 (Wed, 05 Sep 2012) $
- * @version SofortLib 1.5.0  $Id: sofortLib_http.inc.php 5301 2012-09-05 12:27:56Z dehn $
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
+ *
+ * $Date: 2012-11-23 17:15:47 +0100 (Fri, 23 Nov 2012) $
+ * @version SofortLib 1.5.4  $Id: sofortLib_http.inc.php 5773 2012-11-23 16:15:47Z dehn $
  * @author SOFORT AG http://www.sofort.com (integration@sofort.com)
  * @internal
  *
@@ -34,6 +37,14 @@ class SofortLib_Http {
 	protected $_response = '';
 	
 	
+	/**
+	 *
+	 * Constructor for SofortLib_Http
+	 * @param string $url
+	 * @param array $headers
+	 * @param boolean $compression
+	 * @param string $proxy
+	 */
 	public function __construct($url, $headers, $compression = false, $proxy = '') {
 		$this->url = $url;
 		$this->headers = $headers;
@@ -42,6 +53,11 @@ class SofortLib_Http {
 	}
 	
 	
+	/**
+	 *
+	 * Getter for information
+	 * @param string $opt
+	 */
 	public function getinfo($opt = '') {
 		if (!empty($opt)) {
 			return $this->info[$opt];
@@ -129,6 +145,10 @@ class SofortLib_Http {
 			case(200):
 				return array('code' => 200, 'message' => $this->_xmlError($this->httpStatus, 'OK'), 'response' => $this->_response);
 				break;
+			case(301):
+			case(302):
+				return array('code' => $this->httpStatus, 'message' => $this->_xmlError($this->httpStatus, 'Redirected Request'), 'response' => $this->_response);
+				break;
 			case(401):
 				$this->error = 'Unauthorized';
 				return array('code' => 401, 'message' => $this->_xmlError($this->httpStatus, 'Unauthorized'), 'response' => $this->_response);
@@ -150,12 +170,20 @@ class SofortLib_Http {
 	}
 	
 	
+	/**
+	 *
+	 * Getter for HTTP status code
+	 */
 	public function getHttpStatusCode() {
 		$status = $this->getHttpCode();
 		return $status['code'];
 	}
 	
 	
+	/**
+	 *
+	 * Getter for HTTP status message
+	 */
 	public function getHttpStatusMessage() {
 		$status = $this->getHttpCode();
 		return $status['message'];
@@ -221,12 +249,23 @@ class SofortLib_Http {
 	}
 	
 	
+	/**
+	 *
+	 * Error method - format an error
+	 * @param string $error
+	 */
 	public function error($error) {
 		echo '<center><div style="width:500px;border: 3px solid #FFEEFF; padding: 3px; background-color: #FFDDFF;font-family: verdana; font-size: 10px"><b>cURL Error</b><br>'.$error.'</div></center>';
 		die;
 	}
 	
 	
+	/**
+	 *
+	 * Output an xml error
+	 * @param string $code
+	 * @param string $message
+	 */
 	private function _xmlError($code, $message) {
 		return '<errors><error><code>0'.$code.'</code><message>'.$message.'</message></error></errors>';
 	}

@@ -7,9 +7,12 @@
  * $confirmObj->confirmInvoice('1234-456-789654-31321')->sendRequest();
  *
  * Copyright (c) 2012 SOFORT AG
+ * 
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
  *
  * $Date: 2012-05-21 16:53:26 +0200 (Mo, 21 Mai 2012) $
- * @version SofortLib 1.5.0  $Id: sofortLib_edit_sr.inc.php 4191 2012-05-21 14:53:26Z niehoff $
+ * @version SofortLib 1.5.4  $Id: sofortLib_edit_sr.inc.php 4191 2012-05-21 14:53:26Z niehoff $
  * @author SOFORT AG http://www.sofort.com (integration@sofort.com)
  *
  */
@@ -26,8 +29,8 @@ class SofortLib_EditSr extends SofortLib_Abstract {
 	private $_file;
 	
 	/**
-	 * create new confirm object
 	 *
+	 * Constructor for SofortLib_EditSr
 	 * @param String $apikey your API-key
 	 */
 	public function __construct($configKey = '') {
@@ -37,24 +40,48 @@ class SofortLib_EditSr extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 * 
+	 * Setter for transaction
+	 * @param string $transaction
+	 * @param int $invoice
+	 */
 	public function setTransaction($transaction, $invoice = 0) {
 		$this->_parameters['invoice'][$invoice]['transaction'] = $transaction;
 		return $this;
 	}
 	
 	
+	/**
+	 * 
+	 * Setter for invoice's number
+	 * @param string $invoiceNumber
+	 * @param int $invoice
+	 */
 	public function setInvoiceNumber($invoiceNumber, $invoice = 0) {
 		$this->_parameters['invoice'][$invoice]['invoice_number'] = $invoiceNumber;
 		return $this;
 	}
 	
 	
+	/**
+	 * 
+	 * Setter for customer's number
+	 * @param string $customerNumber
+	 * @param int $invoice
+	 */
 	public function setCustomerNumber($customerNumber, $invoice = 0) {
 		$this->_parameters['invoice'][$invoice]['customer_id'] = $customerNumber;
 		return $this;
 	}
 	
 	
+	/**
+	 * 
+	 * Setter for order's number
+	 * @param string $orderNumber
+	 * @param int $invoice
+	 */
 	public function setOrderNumber($orderNumber, $invoice = 0) {
 		$this->_parameters['invoice'][$invoice]['order_id'] = $orderNumber;
 		return $this;
@@ -96,6 +123,12 @@ class SofortLib_EditSr extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 * 
+	 * Update the invoice's cart via passing an array
+	 * @param array $cartItems
+	 * @param int $invoice
+	 */
 	function updateCart($cartItems = array(), $invoice = 0) {
 		$i = 0;
 		
@@ -122,11 +155,19 @@ class SofortLib_EditSr extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 * Parse the XML (override)
+	 * @see SofortLib_Abstract::_parseXml()
+	 */
 	protected function _parseXml() {
 		$this->_file = isset($this->_response['invoice']['download_url']['@data']) ? $this->_response['invoice']['download_url']['@data'] : '';
 	}
 	
 	
+	/**
+	 * Error handling (override)
+	 * @see SofortLib::_handleErrors()
+	 */
 	protected function _handleErrors() {
 		if (!isset($this->_response['invoices']['invoice'][0])) {
 			$tmp = $this->_response['invoices']['invoice'];

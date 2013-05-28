@@ -3,9 +3,12 @@
  * class for refund/rueckbuchung
  *
  * Copyright (c) 2012 SOFORT AG
+ * 
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
  *
- * $Date: 2012-09-05 14:27:56 +0200 (Wed, 05 Sep 2012) $
- * @version SofortLib 1.5.0  $Id: sofortLib_refund.inc.php 5301 2012-09-05 12:27:56Z dehn $
+ * $Date: 2012-11-23 17:26:25 +0100 (Fri, 23 Nov 2012) $
+ * @version SofortLib 1.5.4  $Id: sofortLib_refund.inc.php 5776 2012-11-23 16:26:25Z dehn $
  * @author SOFORT AG http://www.sofort.com (integration@sofort.com)
  *
  */
@@ -18,6 +21,11 @@ class SofortLib_Refund extends SofortLib_Abstract {
 	protected $_xmlRootTag = 'refunds';
 	
 	
+	/**
+	 * 
+	 * Constructor for SofortLib_Refund
+	 * @param string $configKey
+	 */
 	public function __construct($configKey = '') {
 		list($userId, $projectId, $apiKey) = explode(':', $configKey);
 		$apiUrl = (getenv('refundApiUrl') != '') ? getenv('refundApiUrl') : 'https://www.sofort.com/payment/refunds';
@@ -27,7 +35,6 @@ class SofortLib_Refund extends SofortLib_Abstract {
 	
 	/**
 	 * send this message and get response
-	 *
 	 * @return array transactionid=>status
 	 */
 	public function sendRequest() {
@@ -72,58 +79,107 @@ class SofortLib_Refund extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 * 
+	 * Setter for title
+	 * @param string $arg
+	 */
 	public function setTitle($arg) {
 		$this->_parameters['title'] = $arg;
 		return $this;
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for transactions
+	 * @param int $i
+	 */
 	public function getTransactionId($i = 0) {
 		return $this->_response['refunds']['refund'][$i]['transaction']['@data'];
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for amounts
+	 * @param int $i
+	 */
 	public function getAmount($i = 0) {
 		return $this->_response['refunds']['refund'][$i]['amount']['@data'];
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for statuses
+	 * @param int $i
+	 */
 	public function getStatus($i = 0) {
 		return $this->_response['refunds']['refund'][$i]['status']['@data'];
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for comments
+	 * @param int $i
+	 */
 	public function getComment($i = 0) {
 		return $this->_response['refunds']['refund'][$i]['comment']['@data'];
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for refund's title
+	 */
 	public function getTitle() {
 		return $this->_response['refunds']['title']['@data'];
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for refund's errors
+	 * @param int $i
+	 */
 	public function getRefundError($i = 0) {
 		return parent::getError('all', $this->_response[$i]);
 	}
 	
 	
+	/**
+	 * 
+	 * Has an error occurred for refund
+	 * @param int $i
+	 */
 	public function isRefundError($i = 0) {
 		return $this->_response['refunds']['refund'][$i]['status']['@data'] == 'error';
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for DTA (MT940)
+	 */
 	public function getDta() {
 		return $this->_response['refunds']['dta']['@data'];
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for response, as an array
+	 */
 	public function getAsArray() {
 		return $this->_response;
 	}
 	
 	
-	/*
+	/**
+	 * 
+	 * Getter for status array
 	 * @deprecated
 	 */
 	public function getStatusArray() {
@@ -137,9 +193,17 @@ class SofortLib_Refund extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 * Parse the XML (override)
+	 * @see SofortLib_Abstract::_parseXml()
+	 */
 	protected function _parseXml() {}
 	
 	
+	/**
+	 * Handle errors occurred
+	 * @see SofortLib::_handleErrors()
+	 */
 	protected function _handleErrors() {
 		if (!isset($this->_response['refunds']['refund'][0])) {
 			$tmp = $this->_response['refunds']['refund'];

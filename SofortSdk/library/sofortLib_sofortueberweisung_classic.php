@@ -15,9 +15,12 @@ require_once 'sofortLib_classic_notification.inc.php';
  *
  *
  * Copyright (c) 2012 SOFORT AG
+ * 
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
  *
- * $Date: 2012-09-05 14:27:56 +0200 (Wed, 05 Sep 2012) $
- * @version SofortLib 1.5.0  $Id: sofortLib_sofortueberweisung_classic.php 5301 2012-09-05 12:27:56Z dehn $
+ * $Date: 2012-11-23 17:15:47 +0100 (Fri, 23 Nov 2012) $
+ * @version SofortLib 1.5.4  $Id: sofortLib_sofortueberweisung_classic.php 5773 2012-11-23 16:15:47Z dehn $
  * @author SOFORT AG http://www.sofort.com (integration@sofort.com)
  *
  */
@@ -53,6 +56,15 @@ class SofortLib_SofortueberweisungClassic {
 	);
 	
 	
+	/**
+	 * 
+	 * Constructor for SofortLib_SofortueberweisungClassic
+	 * @param int $userId
+	 * @param int $projectId
+	 * @param string $password
+	 * @param string $hashFunction
+	 * @param string $paymentUrl
+	 */
 	public function __construct($userId, $projectId, $password, $hashFunction = 'sha1', $paymentUrl = null) {
 		$this->_password = $password;
 		$this->_userId = $this->params['user_id'] = $userId;
@@ -64,17 +76,33 @@ class SofortLib_SofortueberweisungClassic {
 	}
 	
 	
+	/**
+	 * 
+	 * Setter for amount
+	 * @param float $arg
+	 * @param string $currency
+	 */
 	public function setAmount($arg, $currency = 'EUR') {
 		$this->params['amount'] = $arg;
 		$this->params['currency_id'] = $currency;
 	}
 	
 	
+	/**
+	 * 
+	 * Setter for sender and holder
+	 * @param unknown_type $senderHolder
+	 */
 	public function setSenderHolder($senderHolder) {
 		$this->params['sender_holder'] = $senderHolder;
 	}
 	
 	
+	/**
+	 * 
+	 * Setter for sender's account number
+	 * @param string $senderAccountNumber
+	 */
 	public function setSenderAccountNumber($senderAccountNumber) {
 		$this->params['sender_account_number'] = $senderAccountNumber;
 	}
@@ -93,6 +121,11 @@ class SofortLib_SofortueberweisungClassic {
 	}
 	
 	
+	/**
+	 * 
+	 * User variables can be added here
+	 * @param string $arg
+	 */
 	public function addUserVariable($arg) {
 		$i = 0;
 		
@@ -151,12 +184,21 @@ class SofortLib_SofortueberweisungClassic {
 	}
 	
 	
+	/**
+	 * 
+	 * Setter for interface version
+	 * @param string $arg
+	 */
 	public function setVersion($arg) {
 		$this->params['interface_version'] = $arg;
 		return $this;
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for payment URL
+	 */
 	public function getPaymentUrl() {
 		//fields required for hash
 		$hashFields = $this->_hashFields;
@@ -187,17 +229,26 @@ class SofortLib_SofortueberweisungClassic {
 	}
 	
 	
+	/**
+	 * 
+	 * Has an error occurred
+	 */
 	public function isError() {
 		return false;
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for error occurred
+	 */
 	public function getError() {
 		return false;
 	}
 	
 	
 	/**
+	 * Get the hash value
 	 * @param string $data string to be hashed
 	 * @return string the hash
 	 */
@@ -220,6 +271,8 @@ class SofortLib_SofortueberweisungClassic {
 	
 	
 	/**
+	 * 
+	 * Generate a password
 	 * @param int [optional] $length length of return value, default 24
 	 * @return string
 	 */
@@ -292,6 +345,10 @@ class SofortLib_SofortueberweisungClassic {
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for payment domain
+	 */
 	protected function _getPaymentDomain() {
 		return (getenv('sofortPaymentUrl') != '') ? getenv('sofortPaymentUrl') : $this->_paymentUrl;
 	}

@@ -4,8 +4,11 @@
  *
  * Copyright (c) 2012 SOFORT AG
  *
- * $Date: 2012-09-05 14:27:56 +0200 (Wed, 05 Sep 2012) $
- * @version SofortLib 1.5.0  $Id: sofortLib_debit.inc.php 5301 2012-09-05 12:27:56Z dehn $
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
+ *
+ * $Date: 2013-02-20 18:28:51 +0100 (Wed, 20 Feb 2013) $
+ * @version SofortLib 1.5.4  $Id: sofortLib_debit.inc.php 5989 2013-02-20 17:28:51Z niehoff $
  * @author SOFORT AG http://www.sofort.com (integration@sofort.com)
  *
  */
@@ -18,6 +21,11 @@ class SofortLib_Debit extends SofortLib_Abstract {
 	protected $_xmlRootTag = 'debitpay';
 	
 	
+	/**
+	 *
+	 * Constructor for SofortLib_Debit
+	 * @param string $configKey
+	 */
 	public function __construct($configKey = '') {
 		list($userId, $projectId, $apiKey) = explode(':', $configKey);
 		$apiUrl = (getenv('debitApiUrl') != '') ? getenv('debitApiUrl') : 'https://www.sofort.com/payment/debitpay/xml';
@@ -184,38 +192,73 @@ class SofortLib_Debit extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 *
+	 * Getter for payment reason
+	 * @param int $i
+	 */
 	public function getReason($i = 0) {
 		return $this->_response['reasons'][$i];
 	}
 	
 	
+	/**
+	 *
+	 * Getter for amount
+	 */
 	public function getAmount() {
 		return $this->_response['amount'];
 	}
 	
 	
+	/**
+	 *
+	 * Getter for user variables
+	 * @param int $i
+	 */
 	public function getUserVariable($i = 0) {
 		return $this->_response['user_variables'][$i];
 	}
 	
 	
+	/**
+	 *
+	 * Getter for response's date
+	 */
 	public function getDate() {
 		return $this->_response['date'];
 	}
 	
 	
+	/**
+	 * Has an error occurred
+	 * (non-PHPdoc)
+	 * @see SofortLib::isError()
+	 */
 	public function isError($paymentMethod = 'all', $message = ''){
 		return parent::isError($paymentMethod, $message);
 	}
 	
 	
+	/**
+	 * Get the error occurred
+	 * (non-PHPdoc)
+	 * @see SofortLib::getError()
+	 */
 	public function getError($paymentMethod = 'all', $message = '') {
 		return parent::getError($paymentMethod, $message);
 	}
 	
 	
+	/**
+	 *
+	 * Getter for response
+	 */
 	public function getResponse() {
 		return $this->_response;
 	}
+	
+	
+	protected function _parseXml() {}
 }
 ?>

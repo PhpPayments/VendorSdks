@@ -18,9 +18,12 @@ require_once 'sofortLib_ideal_banks.inc.php';
  * $sofort->getPaymentUrl(); //returns paymentUrl including (including ...&hash=1234567890&...)
  *
  * Copyright (c) 2012 SOFORT AG
+ * 
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
  *
- * $Date: 2012-09-05 14:27:56 +0200 (Wed, 05 Sep 2012) $
- * @version SofortLib 1.5.0  $Id: sofortLib_ideal_classic.php 5301 2012-09-05 12:27:56Z dehn $
+ * $Date: 2012-11-23 17:15:47 +0100 (Fri, 23 Nov 2012) $
+ * @version SofortLib 1.5.4  $Id: sofortLib_ideal_classic.php 5773 2012-11-23 16:15:47Z dehn $
  * @author SOFORT AG http://www.sofort.com (integration@sofort.com)
  *
  */
@@ -61,6 +64,13 @@ class SofortLib_iDealClassic extends SofortLib_SofortueberweisungClassic {
 	);
 	
 	
+	/**
+	 * 
+	 * Contructor for SofortLib_iDealClassic
+	 * @param string $configKey
+	 * @param string $password
+	 * @param string $hashFunction
+	 */
 	public function __construct($configKey, $password, $hashFunction = 'sha1') {
 		list($userId, $projectId, $apiKey) = explode(':', $configKey);
 		$this->_password = $password;
@@ -95,6 +105,11 @@ class SofortLib_iDealClassic extends SofortLib_SofortueberweisungClassic {
 	}
 	
 	
+	/**
+	 * Getter for occurred errors
+	 * (non-PHPdoc)
+	 * @see SofortLib_SofortueberweisungClassic::getError()
+	 */
 	public function getError(){
 		return $this->error;
 	}
@@ -110,6 +125,11 @@ class SofortLib_iDealClassic extends SofortLib_SofortueberweisungClassic {
 	}
 	
 	
+	/**
+	 * Getter for the payment domain
+	 * (non-PHPdoc)
+	 * @see SofortLib_SofortueberweisungClassic::_getPaymentDomain()
+	 */
 	protected function _getPaymentDomain() {
 		return (getenv('idealApiUrl') != '') ? getenv('idealApiUrl') : $this->_paymentUrl;
 	}

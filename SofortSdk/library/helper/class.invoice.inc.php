@@ -2,8 +2,11 @@
 /**
  * Copyright (c) 2012 SOFORT AG
  *
- * $Date: 2012-09-06 12:05:14 +0200 (Thu, 06 Sep 2012) $
- * @version $Id: class.invoice.inc.php 5320 2012-09-06 10:05:14Z dehn $
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
+ *
+ * $Date: 2012-11-23 17:15:47 +0100 (Fri, 23 Nov 2012) $
+ * @version $Id: class.invoice.inc.php 5773 2012-11-23 16:15:47Z dehn $
  * @package sofortLib
  * @author SOFORT AG http://www.sofort.com (integration@sofort.com)
  *
@@ -202,8 +205,9 @@ class PnagInvoice extends PnagAbstractDocument {
 	 */
 	private $_invoiceUrl = '';
 	
+	
 	/**
-	 * Constructor
+	 * Constructor for PnagInvoice
 	 * @param string $apiKey
 	 * @param string $transactionId
 	 * @param string $apiUrl
@@ -353,6 +357,46 @@ class PnagInvoice extends PnagAbstractDocument {
 	
 	
 	/**
+	 * 
+	 * Setter for SofortLib_Multipay
+	 * @param object $SofortLib_Multipay
+	 */
+	public function setSofortLibMultipay($SofortLib_Multipay) {
+		$this->SofortLib_Multipay = $SofortLib_Multipay;
+	}
+	
+	
+	/**
+	 * 
+	 * Setter for SofortLib_TransactionData
+	 * @param object $SofortLib_TransactionData
+	 */
+	public function setSofortLibTransactionData($SofortLib_TransactionData) {
+		$this->SofortLib_TransactionData = $SofortLib_TransactionData;
+	}
+	
+	
+	/**
+	 * 
+	 * Setter for SofortLib_EditSr
+	 * @param object $SofortLib_EditSr
+	 */
+	public function setSofortLibEditSr($SofortLib_EditSr) {
+		$this->EditSr = $SofortLib_EditSr;
+	}
+	
+	
+	/**
+	 * 
+	 * Setter for SofortLib_CancelSr
+	 * @param object $SofortLib_CancelSr
+	 */
+	public function setSofortLibCancelSr($SofortLib_CancelSr) {
+		$this->CancelSr = $SofortLib_CancelSr;
+	}
+	
+	
+	/**
 	 * Initialize SofortLib_ConfirmSR
 	 * @private
 	 * @return Object SofortLib_ConfirmSr
@@ -364,6 +408,10 @@ class PnagInvoice extends PnagAbstractDocument {
 	}
 	
 	
+	/**
+	 * 
+	 * Setup EditSr object
+	 */
 	private function _setupEditSr() {
 		$SofortLib_EditSr = new SofortLib_EditSr($this->_configKey);
 		$SofortLib_EditSr->setTransaction($this->_transactionId);
@@ -371,6 +419,10 @@ class PnagInvoice extends PnagAbstractDocument {
 	}
 	
 	
+	/**
+	 * 
+	 * Setup CancelSr object
+	 */
 	private function _setupCancelSr() {
 		$SofortLib_CancelSr = new SofortLib_CancelSr($this->_configKey);
 		$SofortLib_CancelSr->setTransaction($this->_transactionId);
@@ -539,6 +591,13 @@ class PnagInvoice extends PnagAbstractDocument {
 	}
 	
 	
+	/**
+	 * 
+	 * Update an invoice's item
+	 * @param string $itemId
+	 * @param int $quantity
+	 * @param float $unitPrice
+	 */
 	public function updateInvoiceItem($itemId, $quantity, $unitPrice) {
 		$return = false;
 		foreach ($this->_items as $item) {
@@ -556,6 +615,11 @@ class PnagInvoice extends PnagAbstractDocument {
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for an invoice's amount
+	 * @param string $itemId
+	 */
 	public function getItemAmount($itemId) {
 		return $this->SofortLib_Multipay->getSofortrechnungItemAmount($itemId);
 	}
@@ -768,11 +832,20 @@ class PnagInvoice extends PnagAbstractDocument {
 	}
 	
 	
+	/**
+	 * 
+	 * Setter for amount refunded
+	 * @param amount $arg
+	 */
 	public function setAmountRefunded($arg) {
 		$this->_amountRefunded = $arg;
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for amount refunded
+	 */
 	public function getAmountRefunded() {
 		return $this->_amountRefunded;
 	}
@@ -806,16 +879,28 @@ class PnagInvoice extends PnagAbstractDocument {
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for invoice's number
+	 */
 	public function getInvoiceNumber() {
 		return $this->SofortLib_TransactionData->getInvoiceNumber();
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for customer's number
+	 */
 	public function getCustomerNumber() {
 		return $this->SofortLib_TransactionData->getCustomerNumber();
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for order's number
+	 */
 	public function getOrderNumber() {
 		if ($this->SofortLib_TransactionData instanceof SofortLib_TransactionData) {
 			return $this->SofortLib_TransactionData->getOrderNumber();
@@ -896,6 +981,10 @@ class PnagInvoice extends PnagAbstractDocument {
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for information about transaction
+	 */
 	public function getTransactionInfo() {
 		if (is_a($this->SofortLib_TransactionData, 'SofortLib')) {
 			$this->SofortLib_TransactionData->setTransaction($this->transactionId);
@@ -921,7 +1010,7 @@ class PnagInvoice extends PnagAbstractDocument {
 	public function getInvoice() {
 		$errorCode = $this->getHttpResponseCode($this->_invoiceUrl);
 		
-		if($errorCode !== 200) {
+		if (!in_array($errorCode, array('200', '301', '302'))) {
 			return false;
 		}
 		
@@ -931,6 +1020,11 @@ class PnagInvoice extends PnagAbstractDocument {
 	}
 	
 	
+	/**
+	 * 
+	 * Handle download of invoice
+	 * @param string $method
+	 */
 	public function handleDownload($method = 'socket') {
 		switch ($method) {
 			case 'file_get_contents':
@@ -946,6 +1040,10 @@ class PnagInvoice extends PnagAbstractDocument {
 	}
 	
 	
+	/**
+	 * 
+	 * Getter for invoice's download method
+	 */
 	public function getInvoiceDownloadMethod() {
 		if (ini_get('allow_url_fopen')) {
 			$method = 'file_get_contents';
@@ -958,6 +1056,10 @@ class PnagInvoice extends PnagAbstractDocument {
 	}
 	
 	
+	/**
+	 * 
+	 * Handle download via cURL
+	 */
 	private function handleCurlDownload() {
 		$curl_handle=curl_init();
 		curl_setopt($curl_handle, CURLOPT_URL, $this->_invoiceUrl);
@@ -970,6 +1072,10 @@ class PnagInvoice extends PnagAbstractDocument {
 	}
 	
 	
+	/**
+	 * 
+	 * Handle download via Socket
+	 */
 	private function handleSocketDownload() {
 		$uri = parse_url($this->_invoiceUrl);
 		$host = $uri['host'];
@@ -988,7 +1094,11 @@ class PnagInvoice extends PnagAbstractDocument {
 	}
 	
 	
-	public function getHttpResponseCode($url) {
+	/**
+	 * 
+	 * Getter for HTTP Response code
+	 */
+	public function getHttpResponseCode() {
 		$uri = parse_url($this->_invoiceUrl);
 		$host = $uri['host'];
 		$path = $uri['path'];
@@ -1007,15 +1117,31 @@ class PnagInvoice extends PnagAbstractDocument {
 	}
 	
 	
+	/**
+	 * 
+	 * Open up a socket
+	 * @param string $host
+	 */
 	private function openSocket($host) {
-		return $handle = fsockopen($host, 80, $errorNumber, $errorString);
+		if (!$fp = fsockopen('ssl://'.$host, 443, $errno, $errstr, 15)) {
+			return false;
+		}
+		
+		return $fp;
 	}
 	
 	
+	/**
+	 * 
+	 * Make HTTP header for communication
+	 * @param string $action
+	 * @param string $path
+	 * @param string $host
+	 */
 	private function makeHeader($action, $path, $host) {
 		$header = $action." ".$path." HTTP/1.1\r\n";
 		$header .= 'Host: '.$host."\r\n";
-		$header .= "User-Agent: sofortLib \r\n";
+		$header .= "User-Agent: SOFORTLib \r\n";
 		return $header .= "Connection: Close\r\n\r\n";
 	}
 	
@@ -1101,7 +1227,7 @@ class PnagInvoice extends PnagAbstractDocument {
 	
 	
 	/**
-	 * Setter for time
+	 * Setter for variable time
 	 * @param $time
 	 * @public
 	 * return object
@@ -1285,11 +1411,28 @@ class PnagInvoice extends PnagAbstractDocument {
 			if ($this->SofortLib_Multipay->isError('sr')) {
 				return true;
 			}
-		} else if ($this->ConfirmSr) {
+		}
+		
+		if ($this->ConfirmSr) {
 			if ($this->ConfirmSr->isError('sr')) {
 				return true;
 			}
-		} else if ($this->SofortLib_TransactionData) {
+		}
+		
+		if ($this->EditSr) {
+			if ($this->EditSr->isError('sr')) {
+				return true;
+			}
+		}
+		
+		if ($this->CancelSr) {
+			if ($this->CancelSr->isError('sr')) {
+				return true;
+			}
+		}
+		
+		
+		if ($this->SofortLib_TransactionData) {
 			if ($this->SofortLib_TransactionData->isError('sr')) {
 				return true;
 			}
@@ -1309,11 +1452,27 @@ class PnagInvoice extends PnagAbstractDocument {
 			if ($this->SofortLib_Multipay->isWarning('sr')) {
 				return true;
 			}
-		} elseif ($this->ConfirmSr) {
+		}
+		
+		if ($this->ConfirmSr) {
 			if ($this->ConfirmSr->isWarning('sr')) {
 				return true;
 			}
-		} elseif ($this->SofortLib_TransactionData) {
+		}
+		
+		if ($this->EditSr) {
+			if ($this->EditSr->isWarning('sr')) {
+				return true;
+			}
+		}
+		
+		if ($this->CancelSr) {
+			if ($this->CancelSr->isWarning('sr')) {
+				return true;
+			}
+		}
+		
+		if ($this->SofortLib_TransactionData) {
 			if ($this->SofortLib_TransactionData->isWarning('sr')) {
 				return true;
 			}
@@ -1336,6 +1495,18 @@ class PnagInvoice extends PnagAbstractDocument {
 		if ($this->ConfirmSr) {
 			if ($this->ConfirmSr->isError('sr')) {
 				return $this->ConfirmSr->getError('sr');
+			}
+		}
+		
+		if ($this->EditSr) {
+			if ($this->EditSr->isError('sr')) {
+				return $this->EditSr->getError('sr');
+			}
+		}
+		
+		if ($this->CancelSr) {
+			if ($this->CancelSr->isError('sr')) {
+				return $this->CancelSr->getError('sr');
 			}
 		}
 		
@@ -1392,9 +1563,10 @@ class PnagInvoice extends PnagAbstractDocument {
 	
 	
 	/**
-	 * @public
+	 * 
 	 * Ouputs errors in a more convenient array to let users easily iterate
 	 * @param int $detailLevel
+	 * @public
 	 */
 	public function getErrorCodes($detailLevel = 0) {
 		$errors = $this->getErrors();
@@ -1422,9 +1594,10 @@ class PnagInvoice extends PnagAbstractDocument {
 	
 	
 	/**
-	 * @public
+	 * 
 	 * collects all warnings and returns them
 	 * @return array
+	 * @public
 	 */
 	public function getWarnings() {
 		$allWarnings = array();
@@ -1557,6 +1730,10 @@ class PnagInvoice extends PnagAbstractDocument {
 	}
 	
 	
+	/**
+	 * 
+	 * Override toString
+	 */
 	public function __toString() {
 		$string = '<pre>';
 		$string .= print_r($this, 1);

@@ -1,6 +1,9 @@
 <?php
 /**
  * Copyright (c) 2012 SOFORT AG
+ * 
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
  *
  * $Date: 2011-07-07 11:29:07 +0200 (Do, 07. Jul 2011) $
  * @version SofortLib 1.5.0rc  $Id: example_transactionData.php 1125 2011-07-07 09:29:07Z dehn $

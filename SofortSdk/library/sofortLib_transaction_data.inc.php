@@ -11,8 +11,11 @@
  *
  * Copyright (c) 2012 SOFORT AG
  *
- * $Date: 2012-09-10 10:26:54 +0200 (Mon, 10 Sep 2012) $
- * @version SofortLib 1.3.0  $Id: sofortLib_transaction_data.inc.php 5341 2012-09-10 08:26:54Z Niehoff $
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
+ *
+ * $Date: 2013-04-29 13:22:26 +0200 (Mon, 29 Apr 2013) $
+ * @version SofortLib 1.5.4  $Id: sofortLib_transaction_data.inc.php 6103 2013-04-29 11:22:26Z dehn $
  * @author SOFORT AG http://www.sofort.com (integration@sofort.com)
  *
  */
@@ -27,6 +30,11 @@ class SofortLib_TransactionData extends SofortLib_Abstract {
 	private $_count = 0;
 	
 	
+	/**
+	 *
+	 * Constructor for SofortLib_TransactionData
+	 * @param string $configKey
+	 */
 	public function __construct($configKey = '') {
 		list($userId, $projectId, $apiKey) = explode(':', $configKey);
 		$apiUrl = (getenv('sofortApiUrl') != '') ? getenv('sofortApiUrl') : 'https://api.sofort.com/api/xml';
@@ -247,6 +255,11 @@ class SofortLib_TransactionData extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 *
+	 * Getter for order number
+	 * @param int $i
+	 */
 	public function getOrderNumber($i = 0) {
 		if ($i < 0 || $i >= $this->_count) {
 			return false;
@@ -270,6 +283,11 @@ class SofortLib_TransactionData extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 *
+	 * Getter for the amounts received
+	 * @param int $i
+	 */
 	public function getAmountReceived($i = 0) {
 		if ($i < 0 || $i >= $this->_count) {
 			return false;
@@ -304,255 +322,6 @@ class SofortLib_TransactionData extends SofortLib_Abstract {
 		}
 		
 		return $this->_response[$i]['payment_method']['@data'];
-	}
-	
-	
-	/**
-	 * returns the payments array for an abo payment
-	 * @param int $i if you request multiple transactions at once you can set the number here
-	 * @return array
-	 */
-	public function getSofortdauerauftragPayments($i = 0) {
-		if ($i < 0 || $i >= $this->_count || $this->_response[$i]['payment_method']['@data'] != 'sa') {
-			return false;
-		}
-		
-		$payments = array();
-		
-		foreach ($this->_response[$i]['sa']['payments']['payment'] as $key => $payment) {
-			$payments[$key] = $this->_getPayment($payment);
-		}
-		
-		return $payments;
-	}
-	
-	
-	private function _getPayment($payment) {
-		return array(
-			'serial' => $payment['serial']['@data'],
-			'status' => $payment['status']['@data'],
-			'expected' => $payment['expected']['@data'],
-			'received' => $payment['received']['@data'],
-		);
-	}
-	
-	
-	/**
-	 * returns the start date for an abo payment
-	 * @param int $i if you request multiple transactions at once you can set the number here
-	 * @return array
-	 */
-	public function getSofortdauerauftragStartDate($i = 0) {
-		if ($i < 0 || $i >= $this->_count || $this->_response[$i]['payment_method']['@data'] != 'sa') {
-			return false;
-		}
-		
-		return $this->_response[$i]['sa']['start_date']['@data'];
-	}
-	
-	
-	/**
-	 * returns the interval for an abo payment
-	 * @param int $i if you request multiple transactions at once you can set the number here
-	 * @return int
-	 */
-	public function getSofortdauerauftragInterval($i = 0) {
-		if ($i < 0 || $i >= $this->_count || $this->_response[$i]['payment_method']['@data'] != 'sa') {
-			return false;
-		}
-		
-		return $this->_response[$i]['sa']['interval']['@data'];
-	}
-	
-	
-	/**
-	 * returns total of payments of an abo payment
-	 * @param int $i if you request multiple transactions at once you can set the number here
-	 * @return int
-	 */
-	public function getSofortdauerauftragTotalPayments($i = 0) {
-		if ($i < 0 || $i >= $this->_count || $this->_response[$i]['payment_method']['@data'] != 'sa') {
-			return false;
-		}
-		
-		return $this->_response[$i]['sa']['total_payments']['@data'];
-	}
-	
-	
-	/**
-	 * returns total sum of received payments of an abo payment
-	 * @param int $i if you request multiple transactions at once you can set the number here
-	 * @return int
-	 */
-	public function getSofortdauerauftragPaymentsSum($i = 0) {
-		if ($i < 0 || $i >= $this->_count || $this->_response[$i]['payment_method']['@data'] != 'sa') {
-			return false;
-		}
-		
-		$sum = 0;
-		
-		foreach ($this->_response[$i]['sa']['payments']['payment'] as $payment) {
-			if (array_key_exists('received', $payment)) {
-				$sum += $this->getAmount($i);
-			}
-		}
-		
-		return $sum;
-	}
-	
-	
-	/**
-	 * returns the number of received payments of an abo payment
-	 * @param int $i if you request multiple transactions at once you can set the number here
-	 * @return int
-	 */
-	public function getSofortdauerauftragNumberOfPaymentsPending($i = 0) {
-		if ($i < 0 || $i >= $this->_count || $this->_response[$i]['payment_method']['@data'] != 'sa') {
-			return false;
-		}
-		
-		$sum = 0;
-		
-		foreach ($this->_response[$i]['sa']['payments']['payment'] as $payment) {
-			if (empty($payment['received'])) {
-				$sum++;
-			}
-		}
-		
-		return $sum;
-	}
-	
-	
-	/**
-	 * returns total sum of received payments of an abo payment
-	 * @param int $i if you request multiple transactions at once you can set the number here
-	 * @return int
-	 */
-	public function getSofortdauerauftragNumberOfPaymentsReceived($i = 0) {
-		if($i < 0 || $i >= $this->_count || $this->_response[$i]['payment_method']['@data'] != 'sa') {
-			return false;
-		}
-		
-		$numberOfPayments = 0;
-		
-		foreach ($this->_response[$i]['sa']['payments']['payment'] as $payment) {
-			if (!empty($payment['received'])) {
-				$numberOfPayments++;
-			}
-		}
-		
-		return $numberOfPayments;
-	}
-	
-	
-	/**
-	 * returns the count of minimum payments for an abo payment
-	 * @param int $i if you request multiple transactions at once you can set the number here
-	 * @return int
-	 */
-	public function getSofortdauerauftragMinimumPayments($i = 0) {
-		if ($i < 0 || $i >= $this->_count || $this->_response[$i]['payment_method']['@data'] != 'sa') {
-			return false;
-		}
-		
-		return $this->_response[$i]['sa']['minimum_payments']['@data'];
-	}
-	
-	
-	/**
-	 * returns the count of received payments for an abo payment
-	 * @param int $i if you request multiple transactions at once you can set the number here
-	 * @return int
-	 */
-	public function getSofortdauerauftragPaymentsReceived($i = 0) {
-		if ($i < 0 || $i >= $this->_count || $this->_response[$i]['payment_method']['@data'] != 'sa') {
-			return false;
-		}
-		
-		return $this->_response[$i]['sa']['payments_received']['@data'];
-	}
-	
-	
-	/**
-	 *
-	 * Enter description here ...
-	 * @param int $i if you request multiple transactions at once you can set the number here
-	 */
-	public function getSofortdauerauftragPaymentCount($i = 0) {
-		if ($i < 0 || $i >= $this->_count || $this->_response[$i]['payment_method']['@data'] != 'sa') {
-			return false;
-		}
-		
-		return count($this->_response[$i]['sa']['payments']['payment']);
-	}
-	
-	
-	/**
-	 *
-	 * Get the $j'th payment of $i'th transaction
-	 * @param int $i if you request multiple transactions at once you can set the number here
-	 * @param int $j int current payment
-	 * @return boolean
-	 */
-	public function getSofortdauerauftragPaymentReceived($i = 0, $j = 0) {
-		if ($i < 0 || $i >= $this->_count || (isset($this->_response[$i]['payment_method']['@data']) && $this->_response[$i]['payment_method']['@data'] != 'sa') || $j < 0 || (isset($this->_response[$i]['sa']['payments']['payment']) && ($j > count($this->_response[$i]['sa']['payments']['payment']) -1))) {
-			return false;
-		}
-		
-		return !empty($this->_response[$i]['sa']['payments']['payment'][$j]['received']);
-	}
-	
-	
-	/**
-	 *
-	 * Only payments made in the past (or the current day) are respected ...
-	 * @param int $i if you request multiple transactions at once you can set the number here
-	 * @return boolean
-	 */
-	public function getSofortdauerauftragAllPaymentsReceived($i = 0) {
-		if ($i < 0 || $i >= $this->_count || $this->_response[$i]['payment_method']['@data'] != 'sa') {
-			return false;
-		}
-		
-		$receivedPayments = 0;
-		$date = date('Y-m-d', time());
-		$actDayTimestamp = strtotime($date);
-		
-		foreach ($this->_response[$i]['sa']['payments']['payment'] as $payment) {
-			if (!empty($payment['received']['@data'])) {
-				$receivedPayments++;
-			}
-			
-			if ($payment['status']['@data'] == 'loss') {
-				return false;
-			}
-		}
-		
-		if (!$receivedPayments) return false;
-		
-		return true;
-	}
-	
-	
-	/**
-	 *
-	 * Get the status (received true|false) of the last payment of the currenct transaction
-	 * @param int $i if you request multiple transactions at once you can set the number here
-	 * @return boolean
-	 */
-	public function getSofortdauerauftragLastPaymentReceived($i = 0) {
-		if ($i < 0 || $i >= $this->_count || $this->_response[$i]['payment_method']['@data'] != 'sa') {
-			return false;
-		}
-		
-		$lastPayment = count($this->_response[$i]['sa']['payments']['payment']);
-		// if the last payment is not the last payment in line: return false
-		if ($lastPayment != $this->_response[$i]['sa']['total_payments']['@data']) {
-			return false;
-		} else {
-			// if the last payment in line is not empty return true, false otherwise
-			return $this->_response[$i]['sa']['payments']['payment'][$lastPayment-1]['status']['@data'] == 'received';
-		}
 	}
 	
 	
@@ -627,6 +396,10 @@ class SofortLib_TransactionData extends SofortLib_Abstract {
 	public function getUserVariable($n, $i = 0) {
 		if ($i < 0 || $i >= $this->_count) {
 			return false;
+		}
+		
+		if($n == 0 && !array_key_exists($n, $this->_response[$i]['user_variables']['user_variable'])) {
+			return $this->_response[$i]['user_variables']['user_variable']['@data'];
 		}
 		
 		return $this->_response[$i]['user_variables']['user_variable'][$n]['@data'];
@@ -774,21 +547,6 @@ class SofortLib_TransactionData extends SofortLib_Abstract {
 		}
 		
 		return $this->_response[$i]['payment_method']['@data'] == 'ls';
-	}
-	
-	
-	/**
-	 *
-	 * check if the transaction was a sofortdauerauftrag
-	 * @param int $i if you request multiple transactions at once you can set the number here
-	 * @return boolean true|false
-	 */
-	public function isSofortdauerauftrag($i = 0) {
-		if ($i < 0 || $i >= $this->_count) {
-			return false;
-		}
-		
-		return $this->_response[$i]['payment_method']['@data'] == 'sa';
 	}
 	
 	
@@ -1143,7 +901,7 @@ class SofortLib_TransactionData extends SofortLib_Abstract {
 	
 	/**
 	 *
-	 * invoice number
+	 * Getter for invoice number
 	 * @param int $i if you request multiple transactions at once you can set the number here
 	 * @return string
 	 */
@@ -1230,41 +988,46 @@ class SofortLib_TransactionData extends SofortLib_Abstract {
 	}
 	
 	
+	/**
+	 *
+	 * Getter for count
+	 */
 	public function getCount() {
 		return $this->_count;
 	}
 	
 	
+	/**
+	 * Parse the XML (override)
+	 * (non-PHPdoc)
+	 * @see SofortLib_Abstract::_parseXml()
+	 */
 	protected function _parseXml() {
 		if (isset($this->_response['transactions']['transaction_details'])) {
-			$this->_count = count($this->_response['transactions']['transaction_details']);
+			$transactionFromXml = (isset($this->_response['transactions']['transaction_details'][0]))
+				? $this->_response['transactions']['transaction_details']
+				: $this->_response['transactions'];
+			$this->_count = count($transactionFromXml);
+			$transactions = array();
+			
+			foreach ($transactionFromXml as $transaction) {
+				if (!empty($transaction)) {
+					if (isset($transaction['sr']['items']['item']) && !isset($transaction['sr']['items']['item'][0])) {
+						$tmp = $transaction['sr']['items']['item'];
+						unset($transaction['sr']['items']['item']);
+						$transaction['sr']['items']['item'][] = $tmp;
+						unset($tmp);
+					}
+					
+					$transactions[] = $transaction;
+				}
+			}
+			
+			$this->_response = $transactions;
+			$this->_count = count($transactions);
 		} else {
 			$this->_count = 0;
 		}
-		
-		$transactions = array();
-		
-		foreach ($this->_response['transactions'] as $transaction) {
-			if (!empty($transaction)) {
-				if (isset($transaction['sa']['payments']['payment']) && !isset($transaction['sa']['payments']['payment'][0])) {
-					$tmp = $transaction['sa']['payments']['payment'];
-					unset($transaction['sa']['payments']['payment']);
-					$transaction['sa']['payments']['payment'][] = $tmp;
-					unset($tmp);
-				}
-				
-				if (isset($transaction['sr']['items']['item']) && !isset($transaction['sr']['items']['item'][0])) {
-					$tmp = $transaction['sr']['items']['item'];
-					unset($transaction['sr']['items']['item']);
-					$transaction['sr']['items']['item'][] = $tmp;
-					unset($tmp);
-				}
-				
-				$transactions[] = $transaction;
-			}
-		}
-		
-		$this->_response = $transactions;
 	}
 }
 ?>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @mainpage
- * Base class for Payment Network XML-Api
+ * Base class for SOFORT XML-Api
  * This class implements basic http authentication and a xml-parser
  * for parsing response messages
  *
@@ -9,36 +9,41 @@
  *
  * Copyright (c) 2012 SOFORT AG
  *
- * $Date: 2012-09-10 10:26:54 +0200 (Mon, 10 Sep 2012) $
- * @version SofortLib 1.5.0  $Id: sofortLib.php 5341 2012-09-10 08:26:54Z Niehoff $
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
+ *
+ * $Date: 2012-11-23 17:15:47 +0100 (Fri, 23 Nov 2012) $
+ * @version SofortLib 1.5.4  $Id: sofortLib.php 5773 2012-11-23 16:15:47Z dehn $
  * @author SOFORT AG http://www.sofort.com (integration@sofort.com)
  *
  */
 
 if(!defined('SOFORTLIB_VERSION')) {
-	define('SOFORTLIB_VERSION','1.5.1');
+	define('SOFORTLIB_VERSION','1.5.4');
 }
 
-require_once dirname(__FILE__) . '/sofortLib_abstract.inc.php';
-require_once dirname(__FILE__) . '/sofortLib_confirm_sr.inc.php';
-require_once dirname(__FILE__) . '/sofortLib_edit_sr.inc.php';
-require_once dirname(__FILE__) . '/sofortLib_cancel_sr.inc.php';
-require_once dirname(__FILE__) . '/sofortLib_ideal_banks.inc.php';
-require_once dirname(__FILE__) . '/sofortLib_cancel_sa.inc.php';
-require_once dirname(__FILE__) . '/sofortLib_debit.inc.php';
-require_once dirname(__FILE__) . '/sofortLib_http.inc.php';
-require_once dirname(__FILE__) . '/sofortLib_multipay.inc.php';
-require_once dirname(__FILE__) . '/sofortLib_notification.inc.php';
-require_once dirname(__FILE__) . '/sofortLib_refund.inc.php';
-require_once dirname(__FILE__) . '/sofortLib_transaction_data.inc.php';
-require_once dirname(__FILE__) . '/sofortLib_Logger.inc.php';
+require_once dirname(__FILE__).'/sofortLib_abstract.inc.php';
+require_once dirname(__FILE__).'/sofortLib_confirm_sr.inc.php';
+require_once dirname(__FILE__).'/sofortLib_edit_sr.inc.php';
+require_once dirname(__FILE__).'/sofortLib_cancel_sr.inc.php';
+require_once dirname(__FILE__).'/sofortLib_ideal_banks.inc.php';
+require_once dirname(__FILE__).'/sofortLib_debit.inc.php';
+require_once dirname(__FILE__).'/sofortLib_http.inc.php';
+require_once dirname(__FILE__).'/sofortLib_multipay.inc.php';
+require_once dirname(__FILE__).'/sofortLib_notification.inc.php';
+require_once dirname(__FILE__).'/sofortLib_refund.inc.php';
+require_once dirname(__FILE__).'/sofortLib_transaction_data.inc.php';
+require_once dirname(__FILE__).'/sofortLib_Logger.inc.php';
 
 /** Include any available helper here **/
-require_once dirname(__FILE__) . '/helper/class.abstract_document.inc.php';
-require_once dirname(__FILE__) . '/helper/class.invoice.inc.php';
-require_once dirname(__FILE__) . '/helper/builder.php';
-require_once dirname(__FILE__) . '/helper/array_to_xml.php';
-require_once dirname(__FILE__) . '/helper/xml_to_array.php';
+require_once dirname(__FILE__).'/helper/class.abstract_document.inc.php';
+require_once dirname(__FILE__).'/helper/class.invoice.inc.php';
+require_once dirname(__FILE__).'/helper/elements/sofort_element.php';
+require_once dirname(__FILE__).'/helper/elements/sofort_tag.php';
+require_once dirname(__FILE__).'/helper/elements/sofort_html_tag.php';
+require_once dirname(__FILE__).'/helper/elements/sofort_text.php';
+require_once dirname(__FILE__).'/helper/array_to_xml.php';
+require_once dirname(__FILE__).'/helper/xml_to_array.php';
 
 
 /**
@@ -69,13 +74,13 @@ class SofortLib {
 	
 	protected $_response;
 	
-	protected $_products = array('global', 'sr', 'su', 'sv', 'sa', 'ls', 'sl', 'sf');
+	protected $_products = array('global', 'sr', 'su', 'sv', 'ls', 'sl', 'sf');
 	
 	private $_logfilePath = false;
 	
 	
 	/**
-	 * Constructor
+	 * Constructor for SofortLib
 	 * @param string $apiKey
 	 */
 	public function __construct($userId = '', $apiKey = '', $apiUrl = '') {
@@ -309,7 +314,7 @@ class SofortLib {
 	}
 	
 	
-	/*
+	/**
 	 * set Errors
 	 * later use getError(), getErrors() or isError() to retrieve them
 	 * @param string $message - Detailinformationen about the error
@@ -370,7 +375,7 @@ class SofortLib {
 		
 		$http = $this->SofortLibHttp->getHttpCode();
 		
-		if ($http['code'] != 200) {
+		if (!in_array($http['code'], array('200', '301', '302'))) {
 			return $http['message'];
 		}
 		
@@ -379,8 +384,9 @@ class SofortLib {
 	
 	
 	/**
-	 * @private
+	 * 
 	 * define all headers here
+	 * @private
 	 */
 	private function _getHeaders() {
 		$header = array();
@@ -393,6 +399,7 @@ class SofortLib {
 	
 	
 	/**
+	 * 
 	 * prepare $this->errors for insertion of errors
 	 * @private
 	 */
@@ -408,6 +415,7 @@ class SofortLib {
 	
 	
 	/**
+	 * 
 	 * prepare $this->warnings for insertion of errors
 	 * @see _createErrorsarrayStructure();
 	 * @private
@@ -459,9 +467,10 @@ class SofortLib {
 	
 	/**
 	 *
+	 *Setter for an error
 	 * @public
-	 * @param unknown_type $message
-	 * @param unknown_type $fatal
+	 * @param string $message
+	 * @param boolean $fatal
 	 */
 	public function error($message, $fatal = false){
 		$errorArray = array('message' => 'Error: '.$message, 'code' => '10');
@@ -470,8 +479,9 @@ class SofortLib {
 	
 	
 	/**
-	 * @public
+	 * 
 	 * error while parsing xml
+	 * @public
 	 * @param unknown_type $message
 	 */
 	public function fatalError($message){
@@ -480,6 +490,8 @@ class SofortLib {
 	
 	
 	/**
+	 * 
+	 * Enable logging in object
 	 * @see SofortLib setLogEnabled
 	 * @deprecated
 	 * @public
@@ -491,6 +503,8 @@ class SofortLib {
 	
 	
 	/**
+	 * 
+	 * Disable logging in object
 	 * @see SofortLib setLogDisabled
 	 * @deprecated
 	 * @public
@@ -502,6 +516,8 @@ class SofortLib {
 	
 	
 	/**
+	 * 
+	 * Set logging enable
 	 * @uses enableLog();
 	 * @public
 	 */
@@ -512,6 +528,8 @@ class SofortLib {
 	
 	
 	/**
+	 * 
+	 * Set logging disabled
 	 * @uses disableLog();
 	 * @public
 	 */
@@ -522,6 +540,7 @@ class SofortLib {
 	
 	
 	/**
+	 * 
 	 * Set the SofortLibLogger object
 	 * @param object $SofortLibLogger
 	 * @public
@@ -532,6 +551,7 @@ class SofortLib {
 	
 	
 	/**
+	 * 
 	 * log the given string into warning_log.txt
 	 * use $this->enableLog(); to enable logging before!
 	 * @param string $message
@@ -545,6 +565,7 @@ class SofortLib {
 	
 	
 	/**
+	 * 
 	 * log the given string into error_log.txt
 	 * use $this->enableLog(); to enable logging before!
 	 * @param string $message
@@ -558,6 +579,7 @@ class SofortLib {
 	
 	
 	/**
+	 * 
 	 * log the given string into log.txt
 	 * use $this->enableLog(); to enable logging before!
 	 * @param string $message
@@ -570,6 +592,11 @@ class SofortLib {
 	}
 	
 	
+	/**
+	 * 
+	 * Set the path of the logfile
+	 * @param string $path
+	 */
 	public function setLogfilePath($path) {
 		$this->_logfilePath = $path;
 	}
@@ -584,6 +611,10 @@ class SofortLib {
 	}
 	
 	
+	/**
+	 *
+	 * Handle Errors occurred
+	 */
 	protected function _handleErrors() {
 		//handle errors
 		if (isset($this->_response['errors']['error'])) {
@@ -641,13 +672,43 @@ class SofortLib {
 	}
 	
 	
+	/**
+	 *
+	 * parse the XML received or being sent
+	 */
 	protected function _parseXml() {}
 	
 	
+	/**
+	 *
+	 * Getter for error block
+	 * @param unknown_type $error
+	 */
 	protected function _getErrorBlock($error) {
 		$newError['code'] = isset($error['code']['@data']) ? $error['code']['@data'] : '';
 		$newError['message'] = isset($error['message']['@data']) ? $error['message']['@data'] : '';
 		$newError['field'] = isset($error['field']['@data']) ? $error['field']['@data'] : '';
 		return $newError;
 	}
+	
+	
+	/**
+	 * 
+	 * Static debug method
+	 * @param mixed $var
+	 * @param boolean $showHtml
+	 */
+	public static function debug($var = false, $showHtml = false) {
+		echo "\n<pre class=\"sofort-debug\">\n";
+		$var = print_r($var, true);
+		
+		if ($showHtml) {
+			$var = str_replace('<', '&lt;', str_replace('>', '&gt;', $var));
+		}
+		
+		echo $var . "\n</pre>\n";
+	}
 }
+
+/// @endcond
+?>

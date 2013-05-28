@@ -4,9 +4,12 @@
  * A basic implementation of logging mechanism intended for debugging
  *
  * Copyright (c) 2012 SOFORT AG
+ * 
+ * Released under the GNU General Public License (Version 2)
+ * [http://www.gnu.org/licenses/gpl-2.0.html]
  *
- * $Date: 2012-09-05 14:27:56 +0200 (Wed, 05 Sep 2012) $
- * @version SofortLib 1.5.0  $Id: sofortLib_Logger.inc.php 5301 2012-09-05 12:27:56Z dehn $
+ * $Date: 2012-11-23 11:34:40 +0100 (Fri, 23 Nov 2012) $
+ * @version SofortLib 1.5.4  $Id: sofortLib_Logger.inc.php 5748 2012-11-23 10:34:40Z Niehoff $
  * @author SOFORT AG http://www.sofort.com (integration@sofort.com)
  *
  */
@@ -17,6 +20,10 @@ class SofortLibLogger {
 	public $maxFilesize = 1048576;
 	
 	
+	/**
+	 * 
+	 * Constructor left empty
+	 */
 	public function SofortLibLogger() {
 		// intentionally left empty
 	}
