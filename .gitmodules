@@ -4,3 +4,6 @@
 [submodule "PaypalMerchantSdk"]
 	path = PaypalMerchantSdk
 	url = git://github.com/paypal/merchant-sdk-php.git
+[submodule "PaypalCoreSdk"]
+	path = PaypalCoreSdk
+	url = git://github.com/paypal/sdk-core-php.git
