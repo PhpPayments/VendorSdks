@@ -1,3 +1,6 @@
 [submodule "PaypalRestSdk"]
 	path = PaypalRestSdk
 	url = git://github.com/paypal/rest-api-sdk-php.git
+[submodule "PaypalMerchantSdk"]
+	path = PaypalMerchantSdk
+	url = git://github.com/paypal/merchant-sdk-php.git
