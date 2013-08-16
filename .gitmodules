@@ -7,3 +7,6 @@
 [submodule "PaypalCoreSdk"]
 	path = PaypalCoreSdk
 	url = git://github.com/paypal/sdk-core-php.git
+[submodule "Stripe"]
+	path = Stripe
+	url = https://github.com/stripe/stripe-php.git
